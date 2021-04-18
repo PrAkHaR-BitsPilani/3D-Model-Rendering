@@ -95,7 +95,8 @@ vec3 calcPointLight(PointLight source , vec3 normal , vec3 position , vec3 viewD
 
     //specular strength
     vec3 reflectDir = reflect(-lightDir , norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
     vec3 specular = source.specular * (spec * material.specular);    
 
     return (ambient + diffuse + specular) * attenuation;
@@ -116,6 +117,9 @@ void main()
     {
         result += calcDirLight(dirLights[i] , NormVec , viewDir);
     }
+
+    float gamma = 2.2;
+    result.rgb = pow(result.rgb, vec3(1.0 / gamma));
 
     FragColor = vec4(result , 1.0f);
 };
